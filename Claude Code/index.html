@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Verbify — Smart Vocabulary for Test Prep</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Nunito:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&family=Orbitron:wght@500;700;900&family=VT323&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css?v=38" />
+  <link rel="stylesheet" href="themes.css?v=8" />
+</head>
+<body>
+
+  <!-- ===================== AUTH (login / sign up) ===================== -->
+  <div id="auth" class="overlay hidden">
+    <div class="onboard-card auth-card">
+      <div class="logo-mark">V</div>
+      <h1 id="authTitle">Welcome back</h1>
+      <p class="subtitle" id="authSubtitle">Log in to pick up your streak where you left off.</p>
+
+      <div class="auth-toggle">
+        <button class="atoggle active" data-auth="login">Log in</button>
+        <button class="atoggle" data-auth="signup">Create account</button>
+      </div>
+
+      <form id="authForm" class="auth-form" autocomplete="off" novalidate>
+        <label class="auth-field">
+          <span>Username</span>
+          <input type="text" id="authUser" placeholder="e.g. wordsmith_7" autocomplete="username" />
+        </label>
+        <label class="auth-field">
+          <span>Password</span>
+          <input type="password" id="authPass" placeholder="your password" autocomplete="current-password" />
+        </label>
+        <label class="auth-field hidden" id="confirmField">
+          <span>Confirm password</span>
+          <input type="password" id="authPass2" placeholder="re-enter password" autocomplete="new-password" />
+        </label>
+        <div class="auth-error" id="authError"></div>
+        <button type="submit" class="btn-primary big full" id="authSubmit">Log in →</button>
+      </form>
+
+      <p class="fineprint">Accounts are saved only in this browser. Please don't reuse an important password.</p>
+    </div>
+  </div>
+
+  <!-- ===================== ONBOARDING ===================== -->
+  <div id="onboarding" class="overlay hidden">
+    <div class="onboard-card">
+      <div class="logo-mark">V</div>
+      <h1>Welcome to <span class="brand">Verbify</span></h1>
+      <p class="subtitle">Build a powerful vocabulary for the SSAT, ISEE, SAT and beyond — one streak at a time.</p>
+
+      <div class="goal-section">
+        <h2>What kind of learner are you?</h2>
+        <div class="path-options" id="pathOptions">
+          <button class="path-card selected" data-casual="0">
+            <span class="path-ico" data-icon="brain" data-size="1.5em"></span>
+            <strong>Academic</strong>
+            <span class="path-desc">Test prep for the SSAT, ISEE &amp; SAT — the full plan with periodic mastery tests.</span>
+          </button>
+          <button class="path-card" data-casual="1">
+            <span class="path-ico" data-icon="bulb" data-size="1.5em"></span>
+            <strong>Casual</strong>
+            <span class="path-desc">Just grow your vocabulary at your own pace — useful everyday words, no tests.</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="goal-section">
+        <h2>Set your daily goal</h2>
+        <p class="muted">How many new words will you learn each day?</p>
+        <div class="goal-options" id="goalOptions">
+          <button class="goal-chip" data-goal="3"><strong>3</strong><span>Relaxed</span></button>
+          <button class="goal-chip selected" data-goal="5"><strong>5</strong><span>Steady</span></button>
+          <button class="goal-chip" data-goal="10"><strong>10</strong><span>Serious</span></button>
+          <button class="goal-chip" data-goal="15"><strong>15</strong><span>Intense</span></button>
+        </div>
+      </div>
+
+      <button id="startBtn" class="btn-primary big">Continue →</button>
+      <p class="fineprint">You'll earn <span data-icon="snow" data-size="0.95em"></span> streak freezers as your streak grows — they protect you on days you miss.</p>
+    </div>
+  </div>
+
+  <!-- ===================== DIAGNOSTIC (placement quiz) ===================== -->
+  <div id="diagnostic" class="overlay hidden">
+    <div class="onboard-card diag-card">
+      <div class="logo-mark">V</div>
+      <h1>Which words do you know?</h1>
+      <p class="subtitle">Tap every word you already know the meaning of — we'll start you at the right difficulty. Be honest!</p>
+      <div id="diagBody" class="diag-body"></div>
+      <button id="diagDone" class="btn-primary big full">Start learning →</button>
+      <button id="diagSkip" class="diag-skip">Skip — start me from the basics</button>
+    </div>
+  </div>
+
+  <!-- ===================== APP SHELL ===================== -->
+  <div id="app" class="hidden">
+    <header class="topbar">
+      <div class="brand-row">
+        <div class="logo-mark small">V</div>
+        <span class="brand">Verbify</span>
+      </div>
+      <nav class="tabs">
+        <button class="tab active" data-view="home">Home</button>
+        <button class="tab" data-view="review">Daily Review</button>
+        <button class="tab" data-view="practice">Practice</button>
+        <button class="tab" data-view="progress">Progress</button>
+        <button class="tab" data-view="dictionary">Dictionary</button>
+      </nav>
+      <div class="topbar-right">
+        <div class="streak-badge" id="streakBadge" title="Current streak">
+          <span class="flame" data-icon="flame"></span><span id="streakNum">0</span>
+          <span class="freezer-count" id="freezerBadge" title="Streak freezers"><span data-icon="snow" data-size="0.95em"></span> <span id="freezerNum">0</span></span>
+        </div>
+        <button id="settingsBtn" class="gear-btn" title="Settings" aria-label="Settings"><span data-icon="gear" data-size="1.2em"></span></button>
+        <button id="acctBtn" class="acct-btn" title="Log out" aria-label="Log out">
+          <span id="acctName">@you</span><span class="acct-out">log out</span>
+        </button>
+      </div>
+    </header>
+
+    <main class="content">
+
+      <!-- ============ HOME VIEW ============ -->
+      <section id="view-home" class="view active">
+        <div class="home-grid">
+          <div class="card hero-card">
+            <div id="skillBanner" class="skill-banner"></div>
+            <div class="hero-stats">
+              <div class="stat">
+                <div class="stat-num" id="homeStreak">0</div>
+                <div class="stat-label">Day streak <span data-icon="flame" data-size="0.95em"></span></div>
+              </div>
+              <div class="stat">
+                <div class="stat-num" id="homeLearned">0</div>
+                <div class="stat-label">Words learned</div>
+              </div>
+              <div class="stat">
+                <div class="stat-num" id="homeFreezers">0</div>
+                <div class="stat-label">Freezers <span data-icon="snow" data-size="0.95em"></span></div>
+              </div>
+              <div class="stat">
+                <div class="stat-num" id="homeLongest">0</div>
+                <div class="stat-label">Longest streak</div>
+              </div>
+            </div>
+            <div id="todayStatus" class="today-status"></div>
+            <button id="startReviewBtn" class="btn-primary big full">Start today's review</button>
+            <div class="goal-edit-row">
+              <span class="muted">Daily goal:</span>
+              <select id="goalSelect">
+                <option value="3">3 words</option>
+                <option value="5">5 words</option>
+                <option value="10">10 words</option>
+                <option value="15">15 words</option>
+                <option value="20">20 words</option>
+              </select>
+            </div>
+            <div id="vacationRow" class="vacation-row"></div>
+          </div>
+
+          <div class="card calendar-card">
+            <div class="cal-header">
+              <button id="calPrev" class="icon-btn" aria-label="Previous month">‹</button>
+              <h3 id="calTitle">Month</h3>
+              <button id="calNext" class="icon-btn" aria-label="Next month">›</button>
+            </div>
+            <div class="cal-weekdays">
+              <span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span>
+            </div>
+            <div class="cal-grid" id="calGrid"></div>
+            <div class="cal-legend">
+              <span><i class="dot done"></i> Completed</span>
+              <span><i class="dot frozen"></i> Freezer used</span>
+              <span><i class="dot vacation"></i> Vacation</span>
+              <span><i class="dot today"></i> Today</span>
+            </div>
+          </div>
+
+          <div class="card advent-card">
+            <h3><span data-icon="calendar"></span> Discovery Calendar</h3>
+            <p class="muted">Earn a key each day you finish your review, then open a door for a surprise — bonus XP, word lore, quotes, and collectible stickers.</p>
+            <div id="adventBody"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ REVIEW VIEW ============ -->
+      <section id="view-review" class="view">
+        <div id="reviewStage"></div>
+      </section>
+
+      <!-- ============ PRACTICE VIEW ============ -->
+      <section id="view-practice" class="view">
+        <div id="practiceBody"></div>
+      </section>
+
+      <!-- ============ PROGRESS VIEW ============ -->
+      <section id="view-progress" class="view">
+        <div id="progressBody"></div>
+      </section>
+
+      <!-- ============ SETTINGS VIEW ============ -->
+      <section id="view-settings" class="view">
+        <div id="settingsBody"></div>
+      </section>
+
+      <!-- ============ DICTIONARY VIEW ============ -->
+      <section id="view-dictionary" class="view">
+        <div class="dict-header">
+          <h2>Dictionary</h2>
+          <div class="dict-stats" id="dictStats" aria-live="polite"></div>
+          <div class="dict-toggle">
+            <button class="dtoggle active" data-dict="words">Words</button>
+            <button class="dtoggle" data-dict="roots">Roots &amp; Affixes</button>
+          </div>
+          <input type="search" id="dictSearch" placeholder="Search words, definitions, or roots…" />
+        </div>
+        <div id="dictBody" class="dict-body"></div>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="data.js?v=6"></script>
+  <script src="words-extra.js?v=1"></script>
+  <script src="words-academic.js?v=2"></script>
+  <script src="words-casual.js?v=1"></script>
+  <script src="difficulty.js?v=2"></script>
+  <script src="analogies.js?v=2"></script>
+  <script src="analogy-defs.js?v=1"></script>
+  <script src="icons.js?v=2"></script>
+  <script src="ascii-anim.js?v=12"></script>
+  <script src="ascii-extra.js?v=28"></script>
+  <script src="fx.js?v=2"></script>
+  <script src="app.js?v=50"></script>
+</body>
+</html>
